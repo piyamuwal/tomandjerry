@@ -1,66 +1,103 @@
-var backgroundIMG ;
-var tom, tomImg1 , tomImg2
-var jerry , jerryImg1 , jerryImg2
+//name spacing
+const Engine = Matter.Engine;
+const World = Matter.World;
+const Bodies = Matter.Bodies;
+const Body = Matter.Body;
 
+// Only for debugging code, is this needed, not otherwise
+// const Render = Matter.Render;
 
-
-function preload() {
-    //load the images here
-
-    backgroundIMG=loadImage ("images/garden.png") ;
-     tomImg1=loadAnimation ("images/cat1.png")
-    tomImg2=loadAnimation("images/cat2.png", "images/cat3.png")
-    tomImg3=loadAnimation("images/cat4.png")
-    jerryImg1=loadAnimation("images/mouse1.png")
-    jerryImg2=loadAnimation("images/mouse2.png", "images/mouse3.png")
-    jerryImg3=loadAnimation("images/mouse4.png")
-
-}
+var myengine,myworld;
+var ground, ball;
 
 function setup(){
-    createCanvas(1000,800);
-    //create tom and jerry sprites here
-    tom = createSprite(870,600,600,600);
-    tom.addAnimation("tomsleeping", tomImg1);
-    tom.scale = 0.2 ;
+    var canvas = createCanvas(800,400);
+   
+    myengine = Engine.create();
+    myworld = myengine.world;
 
-    jerry = createSprite(200,600,100,100)
-    jerry.addAnimation("sp",jerryImg1);
-    jerry.scale = 0.15
+    //Code for brown ground
+    var ground_options ={
+        isStatic: true,
+      
+    }
+    ground = Bodies.rectangle(400,390,800,20,ground_options);
+    World.add(myworld,ground);
+    console.log(ground);
 
-}
-
-function draw() {
-
-    background(backgroundIMG);
-    //Write condition here to evalute if tom and jerry collide
-    if(tom.x - jerry.x < (tom.width - jerry.width)){
-        tom.velocityX = 0;
-        tom.addAnimation("tomLastImage", tomImg3)
-        tom.x = 300
-        tom.scale = 0.2
-        tom.changeAnimation("tomLastImage")
-        jerry.addAnimation("jerryLastImage", jerryImg3)
-        jerry.scale = 0.15
-        jerry.changeAnimation("jerryLastImage")
-
+    // Code for red box
+    var redBox_options ={
+        isStatic: true,
     }
 
-    drawSprites();
+    redBox = Bodies.rectangle(260,320,100,120,redBox_options);
+    World.add(myworld,redBox);
+
+    // Code for green box
+    var greenBox_options ={
+        isStatic: true,
+    }
+
+    greenBox = Bodies.rectangle(380,320,100,120,greenBox_options);
+    World.add(myworld,greenBox);
+
+    // Code for yellow box
+    var yellowBox_options ={
+        isStatic: true,
+        angle:-60
+        
+    }
+
+    yellowBox = Bodies.rectangle(590,320,100,20,yellowBox_options);
+    // Matter.Body.setAngle(yellowBox,130)
+    World.add(myworld,yellowBox);
+
+    // Code for ball
+    var ball_options ={
+        isStatic: false,
+        restitution: 1.5
+    }
+
+    ball = Bodies.circle(600,130,20, ball_options);
+    World.add(myworld,ball);
+    
+
+    // Only for debugging code, is this needed, not otherwise
+    // var render = Render.create({
+    //   element: document.body,
+    //   engine: myengine,
+    //   options: {
+    //     width: 1600,
+    //     height: 700,
+    //     wireframes: false
+    //   }
+    // });
+    // Render.run(render);
+
+    //console.log(ball);
 }
 
+function draw(){
+    background("lightgreen");
+    Engine.update(myengine);
+    rectMode(CENTER);
 
-function keyPressed(){
-
-  //For moving and changing animation write code here
-  if(keyCode ===  LEFT_ARROW){
-     tom.velocityX = -5
-     tom.addAnimation("tomRunning", tomImg2)
-      tom.changeAnimation("tomRunning")
-      
-      jerry.addAnimation("jerryTeasing" , jerryImg2)
-      jerry.frameDelay = 25
-      jerry.changeAnimation("jerryTeasing")
-
-       }   
+    fill("brown")
+    rect(ground.position.x,ground.position.y,800,20);
+    fill("red")
+    rect(redBox.position.x,redBox.position.y,100,120);
+    fill("green")
+    rect(greenBox.position.x,greenBox.position.y,100,120);
+    
+    fill("yellow")
+    push();
+    translate(yellowBox.position.x,yellowBox.position.y);
+    rotate(-45);
+    rectMode(CENTER);
+    rect(0, 0, 100, 20);
+    pop();
+   
+    fill("red")
+    ellipseMode(RADIUS);
+    ellipse(ball.position.x, ball.position.y, 20, 20);
 }
